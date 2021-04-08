@@ -305,8 +305,8 @@ namespace hva{
                                                                                  pipelineConfig)));
         } else {
             vulkanPipelines.push_back(std::move(std::make_unique<VulkanPipeline>(device,
-                                                                                 "/Users/hamzalah/Documents/gitProjects/VulkanNeuralNetVis/VulkanNeuralNetVis/shaders/vert.spv",
-                                                                                 "/Users/hamzalah/Documents/gitProjects/VulkanNeuralNetVis/VulkanNeuralNetVis/shaders/frag.spv",
+                                                                                 "/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/shaders/vert.spv",
+                                                                                 "/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/shaders/frag.spv",
                                                                                  pipelineConfig)));
         }
     }
