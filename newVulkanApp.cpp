@@ -4,10 +4,10 @@
 
 #include "newVulkanApp.h"
 
-#include "glm/glm.hpp"
+#include "glm\glm.hpp"
 
 #define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
+#include <GLFW\glfw3.h>
 
 #include <stdexcept>
 #include <array>
@@ -305,8 +305,8 @@ namespace hva{
                                                                                  pipelineConfig)));
         } else {
             vulkanPipelines.push_back(std::move(std::make_unique<VulkanPipeline>(device,
-                                                                                 "/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/shaders/vert.spv",
-                                                                                 "/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/shaders/frag.spv",
+                                                                                 "shaders/vert.spv",
+                                                                                 "shaders/frag.spv",
                                                                                  pipelineConfig)));
         }
     }

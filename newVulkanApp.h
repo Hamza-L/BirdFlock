@@ -5,6 +5,8 @@
 #ifndef VULKANTESTING_NEWVULKANAPP_H
 #define VULKANTESTING_NEWVULKANAPP_H
 
+#define _USE_MATH_DEFINES
+
 #include "vulkanWindow.h"
 #include "vulkanPipeline.h"
 #include "vulkanDevice.h"
@@ -23,6 +25,7 @@
 #include <memory>
 #include <vector>
 #include <chrono>
+#include <cmath>
 
 
 namespace hva {

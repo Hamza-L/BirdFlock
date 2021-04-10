@@ -12,6 +12,10 @@
 
 int main(){
 
+#ifdef _WIN32
+    std::cout<<"hello"<<std::endl;
+#endif
+
     hva::NewVulkanApp app{};
 
     try{
@@ -20,6 +24,7 @@ int main(){
         std::cerr << e.what() <<std::endl;
         return EXIT_FAILURE;
     }
+
 
     return EXIT_SUCCESS;
 }
