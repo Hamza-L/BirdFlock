@@ -6,23 +6,9 @@
 
 #IncludeRegexTransform: 
 
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/main.cpp
-newVulkanApp.h
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/newVulkanApp.h
-cstdlib
--
-iostream
--
-stdexcept
--
-
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/newVulkanApp.cpp
 newVulkanApp.h
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/newVulkanApp.h
-glm/glm.hpp
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/glm/glm.hpp
-GLFW/glfw3.h
--
 stdexcept
 -
 array
@@ -128,34 +114,12 @@ intrin.h
 arm_neon.h
 -
 
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanDevice.cpp
-vulkanDevice.h
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanDevice.h
-cstring
--
-iostream
--
-set
--
-unordered_set
--
-
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanDevice.h
 vulkanWindow.h
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanWindow.h
 string
 -
 vector
--
-
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanModel.cpp
-vulkanModel.h
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanModel.h
-cassert
--
-cstring
--
-iostream
 -
 
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanModel.h
@@ -168,18 +132,6 @@ glm/glm.hpp
 vector
 -
 
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanPipeline.cpp
-vulkanPipeline.h
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanPipeline.h
-fstream
--
-stdexcept
--
-iostream
--
-cassert
--
-
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanPipeline.h
 vulkanDevice.h
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanDevice.h
@@ -190,20 +142,6 @@ string
 vector
 -
 
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanSwapChain.cpp
-vulkanSwapChain.h
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanSwapChain.h
-array
--
-cstdlib
--
-iostream
--
-limits
--
-stdexcept
--
-
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanSwapChain.h
 vulkanDevice.h
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanDevice.h
@@ -212,12 +150,6 @@ vulkan/vulkan.h
 string
 -
 vector
--
-
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanWindow.cpp
-vulkanWindow.h
-/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanWindow.h
-stdexcept
 -
 
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/vulkanWindow.h
