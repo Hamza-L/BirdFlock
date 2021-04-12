@@ -836,7 +836,7 @@ namespace hva{
         }
         uboVP.P = glm::ortho(-w,w,-h,h,0.1f,100.0f);
         vulkanPipelines.clear();
-        createPipeline(1);
+        createPipeline(0);
         for (int i = 0; i<flock.size(); i++){
             //randDir.emplace_back(2 * M_PI * static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
             flock[i]->h = h;
