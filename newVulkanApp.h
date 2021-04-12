@@ -59,11 +59,13 @@ namespace hva {
         struct Bird{
             std::vector<Vertex> birdVert;
             std::vector<uint32_t> birdInd;
+            std::vector<Vertex> lineVert;
+            std::vector<uint32_t> lineInd;
             std::vector<std::unique_ptr<VulkanModel>> objModels;
             glm::vec2 position{};
             std::vector<glm::vec2> prevPos;
             float direction;
-            float speed = 0.5f;
+            float speed = 0.03f;
             float speed_x = 0.3f;
             float speed_y = 0.3f;
             int trailLength = 48;
@@ -89,18 +91,52 @@ namespace hva {
                                         device.getCommandPool(),
                                         0));
 
+
                 direction = 2 * M_PI * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
                 speed_x = speed * cos(direction);
                 speed_y = speed * sin(direction);
-
 
             }
 
             void move(){
                 speed_x = speed * cos(direction);
                 speed_y = speed * sin(direction);
-                float x2 = position.x + speed_x * 0.01f; //new position
-                float y2 = position.y + speed_y * 0.01f; //new position
+                float x2 = position.x + speed_x * 0.1f; //new position
+                float y2 = position.y + speed_y * 0.1f; //new position
+                x2 = glm::mod(x2 +w,2.0f*w) -w;
+                y2 = glm::mod(y2 +h,2.0f*h) -h;
+
+                glm::mat4 birdMove;
+
+                if (abs(x2-position.x)>=0.2 || abs(y2-position.y)>=0.2) {
+                    birdMove = glm::translate(glm::mat4(1.0f), glm::vec3(x2, y2, 0.0f));
+                } else {
+                    glm::vec2 v2 = glm::vec2(x2-position.x,y2-position.y);
+                    glm::vec2 v1 = glm::vec2(1.0f,0.0f);
+                    float angle = glm::degrees(glm::orientedAngle(glm::normalize(glm::vec3(v2,0.0f)), glm::normalize(glm::vec3(v1,0.0f)),glm::vec3(0.0f,0.0f,1.0f)));
+                    birdMove = glm::translate(glm::mat4(1.0f), glm::vec3(x2, y2, 0.0f)) *
+                               glm::rotate(glm::mat4(1.0f), glm::radians(-angle - 90),
+                                           glm::vec3(0.0f, 0.0f, 1.0f));
+                }
+
+                objModels[0]->setModel(birdMove);
+                position.x = x2;
+                position.y = y2;
+                if (prevPos.size()<trailLength) {
+                    prevPos.insert(prevPos.begin(), position);
+                } else if (prevPos.size()>=trailLength){
+                    prevPos.pop_back();
+                    prevPos.insert(prevPos.begin(), position);
+                }
+            }
+
+            void move(float inSpeed_x, float inSpeed_y){
+                speed_x = speed * cos(direction) + inSpeed_x;
+                speed_y = speed * sin(direction) + inSpeed_y;
+                direction = glm::orientedAngle(glm::normalize(glm::vec3(1.0f,0.0f,0.0f)),
+                                                 glm::normalize(glm::vec3(speed_x,speed_y,0.0f)), glm::vec3(0.0f, 0.0f, 1.0f));
+                float x2 = position.x + speed_x * 0.1f; //new position
+                float y2 = position.y + speed_y * 0.1f; //new position
                 x2 = glm::mod(x2 +w,2.0f*w) -w;
                 y2 = glm::mod(y2 +h,2.0f*h) -h;
 
@@ -129,38 +165,51 @@ namespace hva {
             }
 
             void trail(VulkanDevice &device){
+                if(objModels.size()<=1){
+                    return;
+                }
+
                 std::vector<Vertex> newBirdVert;
                 std::vector<uint32_t> newBirdInd;
+
+                if(!lineVert.empty()) {
+                    newBirdVert.push_back(lineVert[0]);
+                    newBirdVert.push_back(lineVert[1]);
+                    newBirdInd.push_back(0);
+                    newBirdInd.push_back(1);
+                    newBirdInd.push_back(0);
+                }
+
                 for (int i=1; i<prevPos.size(); i++) {
 
                     float x2 = prevPos[i].x; //new position
                     float y2 = prevPos[i].y; //new position
-                    x2 = glm::mod(x2 +w,2.0f*w) -w;
-                    y2 = glm::mod(y2 +h,2.0f*h) -h;
 
                     Vertex newV,prevV;
+                    x2 = glm::mod(x2 + w,2.0f*w) -w;
+                    y2 = glm::mod(y2 + h,2.0f*h) -h;
                     newV.position = glm::vec3(x2,y2, 0.0f);
                     newV.colour = glm::vec4(1.0f-sqrt(float(i)/float(trailLength)),0.0f,0.0f,1.0f);
 
-                    prevV.position = glm::vec3(prevPos[i-1], 0.0f);
+                    x2 = prevPos[i-1].x; //new position
+                    y2 = prevPos[i-1].y; //new position
+
+                    x2 = glm::mod(x2 + w, 2.0f * w) -w;
+                    y2 = glm::mod(y2 + h, 2.0f * h) -h;
+                    prevV.position = glm::vec3(x2,y2, 0.0f);
                     prevV.colour = glm::vec4(1.0f-sqrt(float((i-1))/float(trailLength)),0.0f,0.0f,1.0f);
 
                     if(abs(glm::distance(newV.position,prevV.position))<0.5f) {
                         newBirdVert.push_back(prevV);
                         newBirdVert.push_back(newV);
 
-                        newBirdInd.push_back(2 * i - 2);
-                        newBirdInd.push_back(2 * i - 1);
-                        newBirdInd.push_back(2 * i - 2);
+                        newBirdInd.push_back(2 * (i+1) - 2);
+                        newBirdInd.push_back(2 * (i+1) - 1);
+                        newBirdInd.push_back(2 * (i+1) - 2);
                     }
 
                 }
-                if(newBirdInd.size()>3) {
-                    objModels.push_back(
-                            std::make_unique<VulkanModel>(device, newBirdVert, newBirdInd, device.graphicsQueue(),
-                                                          device.getCommandPool(),
-                                                          0));
-                }
+                    objModels[1]->updateModel(newBirdVert,newBirdInd);
             }
 
             void colour(glm::vec4 colour){
@@ -174,30 +223,34 @@ namespace hva {
             }
 
             void addLine(VulkanDevice& device,glm::vec2 p){
-                std::vector<Vertex> newBirdVert;
-                std::vector<uint32_t> newBirdInd = {0,1,0};
-
                 Vertex v1,v2;
                 v1.position = glm::vec3(position, 0.0f);
-                v1.colour = glm::vec4(1.0f);
+                v1.colour = glm::vec4(glm::vec3(0.005f),1.0f);
                 v2.position = glm::vec3(p, 0.0f);
-                v2.colour = glm::vec4(1.0f);
+                v2.colour = glm::vec4(glm::vec3(0.005f),1.0f);
 
-                newBirdVert.push_back(v1);
-                newBirdVert.push_back(v2);
+                lineVert.push_back(v1);
+                lineVert.push_back(v2);
 
-
-                objModels.push_back(std::make_unique<VulkanModel>(device, newBirdVert, newBirdInd, device.graphicsQueue(),
-                                                                  device.getCommandPool(),
-                                                                  0));
+                lineInd.push_back(lineVert.size()-2);
+                lineInd.push_back(lineVert.size()-1);
+                lineInd.push_back(lineVert.size()-2);
             }
 
             void resetLine(){
+                lineVert.clear();
+                lineInd.clear();
                 objModels.resize(1);
             }
 
-            void setModel(glm::mat4 M){
-
+            void setLine(VulkanDevice &device){
+                if(objModels.size()==1 && lineInd.size()>=3) {
+                    objModels.push_back(std::make_unique<VulkanModel>(device, lineVert, lineInd, device.graphicsQueue(),
+                                                                      device.getCommandPool(),
+                                                                      0));
+                }else if(lineInd.size()>3){
+                    objModels[1]->updateModel(lineVert,lineInd);
+                }
             }
         };
         glm::mat4 M1 = glm::mat4(1.0f);

@@ -6,6 +6,16 @@
 
 #IncludeRegexTransform: 
 
+/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/main.cpp
+newVulkanApp.h
+/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/newVulkanApp.h
+cstdlib
+-
+iostream
+-
+stdexcept
+-
+
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/newVulkanApp.cpp
 newVulkanApp.h
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/newVulkanApp.h
@@ -48,6 +58,8 @@ memory
 vector
 -
 chrono
+-
+cmath
 -
 
 /Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock/shapes/Cube.h
