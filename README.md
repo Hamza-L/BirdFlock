@@ -16,5 +16,6 @@ connections between birds in vicinity
 - stb_image.h (for importing images: https://github.com/nothings/stb/blob/master/stb_image.h)
 
 ###Demo of the program:
+
 ![birdFlock.gif](birdFlock.gif)
 
