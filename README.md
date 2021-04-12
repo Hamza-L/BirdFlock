@@ -5,7 +5,3 @@ Collision avoidance implemented with controllable red bird.
 
 ![birdFlock.gif](birdFlock.gif)
 
-*For reference:*
-Vulkan device extensions supported on Windows Bootcamp vs MacOS: 
-
-![img.png](img.png)
