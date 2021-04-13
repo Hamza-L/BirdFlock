@@ -12,7 +12,8 @@
 #include <mm_malloc.h>
 #include <cstdlib>
 
-const int MAX_OBJECTS = 50;
+const int MAX_OBJECTS = 100;
+const bool CONTROL = true;
 const bool TEXTURE = false;
 
 bool MPRESS = false;
@@ -473,11 +474,11 @@ namespace hva{
         //vkCmdSetViewport(commandBuffers[i],0,1,&pipelineConfig.viewport); //flip the viewport along the y axis.
         for (int p=0; p<1; p++) {
             for (int m = 0; m < flock.size(); m++) {
-                for (int l = 0; l<flock[m]->objModels.size(); l++) {
+                for (int l = 0; l<1; l++) { //instead of l<flock[m]->objModels.size();
                     //std::cout << p << std::endl;
                     vulkanPipelines[p]->bind(commandBuffers[imageIndex]);
-                    flock[m]->objModels[l]->bind(commandBuffers[imageIndex]);
-                    flock[m]->objModels[l]->bindIndexed(commandBuffers[imageIndex]);
+                    flock[m]->birdModel->bind(commandBuffers[imageIndex]);
+                    flock[m]->birdModel->bindIndexed(commandBuffers[imageIndex]);
 
                     //uint32_t dynamicOffset = static_cast<uint32_t>(modelUniformAlignment) * m;
                     vkCmdPushConstants(commandBuffers[imageIndex],
@@ -485,7 +486,7 @@ namespace hva{
                                        VK_SHADER_STAGE_VERTEX_BIT,
                                        0,
                                        sizeof(PushObject),
-                                       flock[m]->objModels[l]->getModel());
+                                       flock[m]->birdModel->getModel());
 
                     if (TEXTURE) {
                         std::array<VkDescriptorSet, 2> descriptorSetGroup = {descriptorSets[imageIndex],
@@ -503,7 +504,7 @@ namespace hva{
                                                 0,
                                                 nullptr); //we have no dynamic offset yet (only using uniform buffer);
                     }
-                    flock[m]->objModels[l]->drawIndexed(commandBuffers[imageIndex]);
+                    flock[m]->birdModel->drawIndexed(commandBuffers[imageIndex]);
 
                 }
             }
@@ -632,76 +633,90 @@ namespace hva{
             }
         }
 
-        float sec = glfwGetTime();
-        flock[0]->resetLine();
+        int startIndex = 0;
 
-        if(LEFT){
-            flock[0]->direction+=M_PI/48.0f;
-            //flock[0]->speed_x-=0.02f;
-        } else if (RIGHT){
-            flock[0]->direction-=M_PI/48.0f;
-            //flock[0]->speed_x+=0.02f;
+        if(CONTROL) {
+            //flock[0]->resetLine();
+            if (LEFT) {
+                flock[0]->direction += M_PI / 48.0f;
+                //flock[0]->speed_x-=0.02f;
+            } else if (RIGHT) {
+                flock[0]->direction -= M_PI / 48.0f;
+                //flock[0]->speed_x+=0.02f;
+            }
+            if (UP_PRESS) {
+                flock[0]->speed += 0.001f;
+                //flock[0]->speed_y+=0.02f;
+            } else if (DOWN) {
+                flock[0]->speed -= 0.001f;
+                //flock[0]->speed_y-=0.02f;
+            }
+            flock[0]->move();
+            //flock[0]->trail(device);
+            startIndex = 1;
         }
-        if(UP_PRESS){
-            flock[0]->speed+=0.001f;
-            //flock[0]->speed_y+=0.02f;
-        } else if (DOWN){
-            flock[0]->speed-=0.001f;
-            //flock[0]->speed_y-=0.02f;
-        }
-        flock[0]->move();
-        flock[0]->trail(device);
 
 
-        for(int i=1; i<flock.size(); i++){
-            flock[i]->resetLine();
+        for(int i=startIndex; i<flock.size(); i++){
+            //flock[i]->resetLine();
                 //flock[i]->trail(device);
                 //flock[i]->addLine(device,flock[i]->position + 0.1f*glm::vec2(cos(flock[i]->direction),sin(flock[i]->direction)));
-                float speed_x = 0;
-                float speed_y = 0;
+                float speed_x,speed_y;
+                float obsAvoidSpeed_x, obsAvoidSpeed_y;
+                float obsAlignSpeed_x, obsAlignSpeed_y;
                 float birdInRange = 1;
                 float minDist = 100.0f;
                 for (int j = 0; j < flock.size(); j++) {
-                    float x_j = flock[j]->position.x;
-                    float y_j = flock[j]->position.y;
-                    float x_i = flock[i]->position.x;
-                    float y_i = flock[i]->position.y;
-                    glm::vec2 v2 = glm::vec2(x_j - x_i, y_j - y_i);
-                    glm::vec2 v1 = glm::vec2(cos(flock[i]->direction), sin(flock[i]->direction));
-                    float angle = glm::orientedAngle(glm::normalize(glm::vec3(v2, 0.0f)),
-                                                     glm::normalize(glm::vec3(v1, 0.0f)), glm::vec3(0.0f, 0.0f, 1.0f));
+                    if(flock[i] == flock[j]){
+                        continue;
+                    }
                     float dist = glm::distance(flock[i]->position, flock[j]->position);
-                    if (dist < 0.3f && abs(angle) < ((M_PI * 3.0f) / 4.0f) && dist<minDist) {
-                        minDist = dist;
-                        birdInRange++;
-                        float xdiff = (x_j - x_i);
-                        float ydiff = (y_j - y_i);
-                        //flock[i]->addLine(device, flock[j]->position);
-                        if(abs(angle) > (M_PI / 4.0f)){
-                            speed_x = flock[i]->speed * (-xdiff / abs(xdiff));
-                            speed_y = flock[i]->speed * (-ydiff / abs(ydiff));
-                        } else if (angle>0){
-                            double direction = flock[i]->direction + M_PI/2.0f;
-                            speed_x = flock[i]->speed * cos(direction);
-                            speed_y = flock[i]->speed * sin(direction);
-                            //std::cout<<"["<<speed_x<<","<<speed_y<<"]"<<std::endl;
-                        } else {
-                            double direction = flock[i]->direction - M_PI/2.0f;
-                            speed_x = flock[i]->speed * cos(direction);
-                            speed_y = flock[i]->speed * sin(direction);
-                        }
+                    float range = 0.2f;
+                    if (dist < range && dist<minDist) {
+                        float x_j = flock[j]->position.x;
+                        float y_j = flock[j]->position.y;
+                        float x_i = flock[i]->position.x;
+                        float y_i = flock[i]->position.y;
+                        glm::vec2 v2 = glm::vec2(x_j - x_i, y_j - y_i);
+                        glm::vec2 v1 = glm::vec2(cos(flock[i]->direction), sin(flock[i]->direction));
+                        float angle = glm::orientedAngle(glm::normalize(glm::vec3(v2, 0.0f)),
+                                                         glm::normalize(glm::vec3(v1, 0.0f)), glm::vec3(0.0f, 0.0f, 1.0f));
+                        if(abs(angle) < ((M_PI * 3.0f) / 4.0f)){
+                            minDist = dist;
+                            birdInRange++;
+                            float xdiff = (x_j - x_i);
+                            float ydiff = (y_j - y_i);
 
-                        speed_x *= pow(0.3f - abs(xdiff),2.0f);
-                        speed_y *= pow(0.3f - abs(ydiff),2.0f);
+                            obsAlignSpeed_x = 0.1f * flock[j]->speed_x;
+                            obsAlignSpeed_y = 0.1f * flock[j]->speed_y;
+
+                            //flock[i]->addLine(device, flock[j]->position);
+                            if(abs(angle) > (M_PI / 4.0f)){
+                                obsAvoidSpeed_x = flock[i]->speed * (-xdiff / abs(xdiff));
+                                obsAvoidSpeed_y = flock[i]->speed * (-ydiff / abs(ydiff));
+                            } else {
+                                double direction = flock[i]->direction + M_PI / 2.0f * (angle / abs(angle));
+                                obsAvoidSpeed_x = flock[i]->speed * cos(direction);
+                                obsAvoidSpeed_y = flock[i]->speed * sin(direction);
+                                //std::cout<<"["<<speed_x<<","<<speed_y<<"]"<<std::endl;
+                            }
+
+                            obsAvoidSpeed_x *= pow(range - abs(xdiff),2.0f);
+                            obsAvoidSpeed_y *= pow(range - abs(ydiff),2.0f);
+                        }
                     }
                 }
+                glm::vec2 speedToTarget = 0.001f * glm::normalize(flock[0]->position - flock[i]->position);
+                speed_x = obsAvoidSpeed_x + obsAlignSpeed_x;
+                speed_y = obsAvoidSpeed_y + obsAlignSpeed_y;
                 //std::cout<<"["<<speed_x<<","<<speed_y<<"]"<<std::endl;
-                if(birdInRange>1) {
-                    flock[i]->move(speed_x, speed_y);
+                if(birdInRange>1 && abs(speed_x)>0 && abs(speed_x)<4.0f && abs(speed_y)>0 && abs(speed_y)<4.0f) {
+                    flock[i]->move(speed_x + speedToTarget.x,
+                                   speed_y + speedToTarget.y);
                 } else {
-                    flock[i]->move();
+                    flock[i]->move(speedToTarget.x,speedToTarget.y);
                 }
-            flock[i]->setLine(device);
+            //flock[i]->setLine(device);
         }
 
         /** logic in creating line segments
@@ -845,7 +860,7 @@ namespace hva{
         //float h = (float)vulkanSwapChain->height()/(float)vulkanSwapChain->width();
         //uboVP.ratio = h;
     }
-
+    
     stbi_uc *NewVulkanApp::loadTextureFile(std::string filename, int * width, int * height, VkDeviceSize* imageSize) {
         //number of channels the image usage
         int channels;

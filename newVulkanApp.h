@@ -62,6 +62,7 @@ namespace hva {
             std::vector<Vertex> lineVert;
             std::vector<uint32_t> lineInd;
             std::vector<std::unique_ptr<VulkanModel>> objModels;
+            std::unique_ptr<VulkanModel> birdModel;
             glm::vec2 position{};
             std::vector<glm::vec2> prevPos;
             float direction;
@@ -87,10 +88,13 @@ namespace hva {
 
                 birdInd = {0,1,2};
 
-                objModels.push_back(std::make_unique<VulkanModel>(device, birdVert, birdInd, device.graphicsQueue(),
-                                        device.getCommandPool(),
-                                        0));
+                //objModels.push_back(std::make_unique<VulkanModel>(device, birdVert, birdInd, device.graphicsQueue(),
+                                        //device.getCommandPool(),
+                                        //0));
 
+                birdModel = std::make_unique<VulkanModel>(device, birdVert, birdInd, device.graphicsQueue(),
+                                                          device.getCommandPool(),
+                                                          0);
 
                 direction = 2 * M_PI * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
                 speed_x = speed * cos(direction);
@@ -119,7 +123,7 @@ namespace hva {
                                            glm::vec3(0.0f, 0.0f, 1.0f));
                 }
 
-                objModels[0]->setModel(birdMove);
+                birdModel->setModel(birdMove);
                 position.x = x2;
                 position.y = y2;
                 if (prevPos.size()<trailLength) {
@@ -153,7 +157,7 @@ namespace hva {
                                            glm::vec3(0.0f, 0.0f, 1.0f));
                 }
 
-                objModels[0]->setModel(birdMove);
+                birdModel->setModel(birdMove);
                 position.x = x2;
                 position.y = y2;
                 if (prevPos.size()<trailLength) {
@@ -219,7 +223,7 @@ namespace hva {
                     newBirdVert.push_back(v);
                 }
                 birdVert = newBirdVert;
-                objModels[0]->updateModel(birdVert,birdInd);
+                birdModel->updateModel(birdVert,birdInd);
             }
 
             void addLine(VulkanDevice& device,glm::vec2 p){
@@ -254,7 +258,6 @@ namespace hva {
             }
         };
         glm::mat4 M1 = glm::mat4(1.0f);
-        glm::mat4 M2 = glm::mat4(1.0f);
         void loadModels();
         void createPipelineLayout();
         void createDescriptorSetLayout();
