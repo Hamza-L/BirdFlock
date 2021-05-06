@@ -12,7 +12,7 @@
 #include <mm_malloc.h>
 #include <cstdlib>
 
-const int MAX_OBJECTS = 100;
+const int MAX_OBJECTS = 150;
 const bool CONTROL = true;
 const bool TEXTURE = false;
 
@@ -298,8 +298,8 @@ namespace hva{
         pipelineConfig.pipelineLayout = pipelineLayout;
         if(TEXTURE){
             vulkanPipelines.push_back(std::move(std::make_unique<VulkanPipeline>(device,
-                                                                                 "/Users/hamzalah/Documents/gitProjects/VulkanNeuralNetVis/VulkanNeuralNetVis/shaders/textvert.spv",
-                                                                                 "/Users/hamzalah/Documents/gitProjects/VulkanNeuralNetVis/VulkanNeuralNetVis/shaders/textfrag.spv",
+                                                                                 "shaders/textvert.spv",
+                                                                                 "shaders/textfrag.spv",
                                                                                  pipelineConfig)));
         } else {
             vulkanPipelines.push_back(std::move(std::make_unique<VulkanPipeline>(device,
@@ -718,59 +718,6 @@ namespace hva{
                 }
             //flock[i]->setLine(device);
         }
-
-        /** logic in creating line segments
-        if (MPRESS && !MFLAG) {
-            //std::cout << "pressed" << std::endl;
-            MFLAG = true;
-            if (vertList.empty()) {
-                Vertex v;
-                v.colour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-                v.norm = glm::vec3(0.0f, 0.0f, 1.0f);
-                glm::vec4 tempP = glm::inverse(M1) * glm::vec4(float(xPos), float(yPos), 0.0f,1.0f);
-                v.position = glm::vec3(tempP.x, tempP.y, tempP.z);
-                v.up = glm::vec3(0.0f, 1.0f, 0.0f);
-                vertList.push_back(v);
-                //indList.push_back(vertList.size()-1);
-            } else {
-                Vertex v;
-                v.colour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-                v.norm = glm::vec3(0.0f, 0.0f, 1.0f);
-                glm::vec4 tempP = glm::inverse(M1) * glm::vec4(float(xPos), float(yPos), 0.0f,1.0f);
-                v.position = glm::vec3(tempP.x, tempP.y, tempP.z);
-                v.up = glm::vec3(0.0f, 1.0f, 0.0f);
-                vertList.push_back(v);
-                indList.push_back(vertList.size() - 2);
-                indList.push_back(vertList.size() - 1);
-            }
-
-            if (vertList.size() == 2) {
-                modelList.push_back(std::move(
-                        std::make_unique<VulkanModel>(device, vertList, indList, device.graphicsQueue(),
-                                                      device.getCommandPool(),
-                                                      createTexture("pavingStones.jpg", "pavingStonesUV.jpg"))));
-            }
-
-            if (indList.size() > 3) {
-                modelList[1]->updateModel(vertList, indList);
-            }
-        }
-         **/
-
-        //M2 =  M2 * glm::rotate(glm::mat4(1.0f), glm::radians(sec * 90.0f),glm::vec3(0.0f,1.0f,0.0f));
-        //modelList[0]->setModel(M2);
-        //modelList[1]->setModel(Scale*M2);
-
-        /*
-        for(int i=0; i<vertList.size(); i++) {
-            std::cout <<"["<<vertList[i].position.x <<", "<< vertList[i].position.y <<", "<<vertList[i].position.z<<"]"<<std::endl;
-        }
-        std::cout<<"[";
-        for(int i=0; i<indList.size(); i++) {
-            std::cout<<indList[i]<<", ";
-        }
-        std::cout<<"]"<<std::endl;
-         */
     }
 
     void NewVulkanApp::createPushConstantRange() {
