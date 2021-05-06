@@ -15,6 +15,12 @@
 ########################
 
 //Value Computed by CMake
+BirdFLock_BINARY_DIR:STATIC=/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock
+
+//Value Computed by CMake
+BirdFLock_SOURCE_DIR:STATIC=/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock
+
+//Value Computed by CMake
 BirdFlock_BINARY_DIR:STATIC=/Users/hamzalah/Documents/gitProjects/BirdFlock/BirdFlock
 
 //Value Computed by CMake
@@ -151,7 +157,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=BirdFlock
+CMAKE_PROJECT_NAME:STATIC=BirdFLock
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
