@@ -319,7 +319,7 @@ namespace hva {
         std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
         for (const auto &extension : availableExtensions) {
-            std::cout<<extension.extensionName<<std::endl;
+            //std::cout<<extension.extensionName<<std::endl;
             requiredExtensions.erase(extension.extensionName);
         }
 

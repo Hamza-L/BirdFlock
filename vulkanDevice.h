@@ -30,7 +30,7 @@ namespace hva {
     class VulkanDevice {
     public:
 #ifdef NDEBUG
-        const bool enableValidationLayers = false;
+        const bool enableValidationLayers = true;
 #else
         const bool enableValidationLayers = true;
 #endif
